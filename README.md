@@ -1,75 +1,373 @@
-# React + TypeScript + Vite
+# AVR Health Monitor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Professional AVR (Automatic Voltage Regulator) Health Monitoring and Diagnostics Application.
 
-Currently, two official plugins are available:
+The application provides real-time monitoring, visualization, diagnostics, transport abstraction, telemetry logging, and future-ready support for multiple communication interfaces.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+# Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+AVR Health Monitor is designed as a modular industrial monitoring platform capable of receiving telemetry from multiple transport layers such as:
 
-## Expanding the ESLint configuration
+- CAN
+- USB TTL
+- RS422 (planned)
+- Simulator
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The system provides a unified dashboard for monitoring:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Electrical Parameters
+- Current Parameters
+- Exciter Parameters
+- Thermal Parameters
+- Protection Status
+- Fault Status
+- Built-In Test (BIT) Results
+- Health Status
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Features
 
+## Real-Time Telemetry
+
+- Live parameter monitoring
+- WebSocket based updates
+- Low latency data refresh
+
+## Trend Analysis
+
+- Historical parameter plotting
+- Temperature trends
+- Voltage trends
+- Current trends
+
+## Transport Abstraction Layer
+
+Runtime switching between transports.
+
+Supported:
+
+- CAN
+- USB TTL
+- Simulator
+
+Planned:
+
+- RS422
+- Ethernet
+- UDP
+- TCP/IP
+
+## Modular Backend
+
+Driver architecture allows easy addition of new communication interfaces.
+
+---
+
+# High Level Architecture
+
+Frontend
+↓
+WebSocket / REST API
+↓
+FastAPI Backend
+↓
+Transport Manager
+↓
+Transport Driver
+↓
+Hardware
+
+Examples:
+
+Frontend
+↓
+Backend
+↓
+CAN Driver
+↓
+AVR Controller
+
+Frontend
+↓
+Backend
+↓
+USB TTL Driver
+↓
+AVR Controller
+
+Frontend
+↓
+Backend
+↓
+Simulator Driver
+↓
+Generated Telemetry
+
+---
+
+# Technology Stack
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Material UI
+- Zustand
+- Recharts
+
+## Backend
+
+- Python
+- FastAPI
+- WebSocket
+
+---
+
+# Project Structure
+
+```text
+backend/
+
+├── api/
+├── drivers/
+│   ├── can_driver.py
+│   ├── usb_ttl_driver.py
+│   └── simulator_driver.py
+│
+├── managers/
+│   └── transport_manager.py
+│
+├── services/
+├── models/
+└── main.py
+
+src/
+
+├── components/
+├── pages/
+├── store/
+├── services/
+└── App.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# Transport Layer
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+The application uses a Transport Manager pattern.
 
+Responsibilities:
+
+- Driver creation
+- Driver switching
+- Connection handling
+- Runtime transport selection
+
+Example:
+
+```python
+transport_manager.switch_transport(
+    "can"
+)
 ```
+
+Supported values:
+
+```text
+can
+usb_ttl
+simulator
+```
+
+---
+
+# Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/himalpha-hub/avr-health-monitor.git
+```
+
+```bash
+cd avr-health-monitor
+```
+
+---
+
+# Frontend Setup
+
+```bash
+npm install
+```
+
+Run:
+
+```bash
+npm run dev
+```
+
+Default:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# Backend Setup
+
+Create virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate:
+
+```bash
+.venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run:
+
+```bash
+uvicorn backend.main:app --reload
+```
+
+Default:
+
+```text
+http://localhost:8000
+```
+
+---
+
+# API Endpoints
+
+## Switch Transport
+
+```http
+POST /transport
+```
+
+Example:
+
+```json
+{
+  "transport": "usb_ttl"
+}
+```
+
+---
+
+# WebSocket
+
+```text
+ws://localhost:8000/ws
+```
+
+Used for:
+
+- Real-time telemetry streaming
+- Dashboard updates
+- Trend plotting
+
+---
+
+# Supported Parameters
+
+## Electrical
+
+- Output Voltage
+- Output Frequency
+
+## Current
+
+- Output Current
+
+## Thermal
+
+- Temperature
+- Ambient Temperature
+
+## Exciter
+
+- Excitation Voltage
+- Excitation Current
+
+## Protection
+
+- Over Voltage
+- Under Voltage
+- Over Temperature
+
+## Health
+
+- System Health
+- BIT Status
+- Fault Status
+
+---
+
+# Contribution Workflow
+
+See:
+
+CONTRIBUTING.md
+
+Workflow:
+
+Fork
+→ Feature Branch
+→ Commit
+→ Pull Request
+→ Review
+→ Merge
+
+---
+
+# Roadmap
+
+## Phase 1
+
+- Dashboard
+- Simulator
+- USB TTL
+- CAN
+
+## Phase 2
+
+- RS422
+- Data Logging
+- CSV Export
+
+## Phase 3
+
+- Ethernet
+- Remote Monitoring
+- User Authentication
+
+## Phase 4
+
+- Multi-Device Monitoring
+- Alarm Management
+- Advanced Diagnostics
+
+---
+
+# License
+
+Copyright © HimAlpha
+
+All Rights Reserved.
