@@ -1,0 +1,16 @@
+{
+    "transport": "simulator",
+    "can": {
+        "channel": "can0",
+        "bitrate": 500000,
+        "data_bitrate": 2000000
+    },
+    "rs422": {
+        "port": "COM3",
+        "baudrate": 115200
+    },
+    "usb_ttl": {
+        "port": "COM4",
+        "baudrate": 115200
+    }
+}
